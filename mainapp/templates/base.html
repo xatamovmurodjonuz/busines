@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Biznes Platforma{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f9fafb;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: #007a7a;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      color: #005050;
+      text-decoration: underline;
+    }
+
+    header {
+      background: #007a7a;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    header h1 a {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    nav {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    nav a.btn {
+      background: #00bfa5;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    nav a.btn:hover {
+      background: #009688;
+    }
+
+    .messages {
+      max-width: 1000px;
+      margin: 15px auto;
+      padding: 0 15px;
+    }
+
+    .messages li {
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      list-style: none;
+    }
+
+    .messages li.success { background: #ddffdd; color: #2f6627; border-left: 6px solid #2f6627; }
+    .messages li.error { background: #ffdddd; color: #d8000c; border-left: 6px solid #d8000c; }
+    .messages li.info { background: #ddeeff; color: #00529b; border-left: 6px solid #00529b; }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    footer {
+      background: #007a7a;
+      color: white;
+      text-align: center;
+      padding: 15px 30px;
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+
+    .reaction-buttons {
+      margin-top: 10px;
+    }
+
+    .reaction-buttons form {
+      display: inline;
+      margin-right: 10px;
+    }
+
+    .reaction-buttons button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .reaction-buttons button:hover {
+      text-decoration: underline;
+    }
+
+    .comment-box {
+      margin-top: 30px;
+    }
+
+    .comment-box textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: vertical;
+    }
+
+    .comment-box button {
+      margin-top: 10px;
+      background: #00bfa5;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .comment-box button:hover {
+      background: #009688;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      main {
+        margin: 20px 10px;
+      }
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <header>
+    <h1><a href="{% url 'mainapp:home' %}"><i class="fas fa-briefcase"></i> Biznes Platforma</a></h1>
+    <nav>
+      {% if user.is_authenticated %}
+        <span>Salom, <strong>{{ user.username }}</strong></span>
+        <a href="{% url 'mainapp:add_business' %}" class="btn"><i class="fas fa-plus"></i> Biznes qo'shish</a>
+        <a href="{% url 'account_logout' %}" class="btn"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
+      {% else %}
+        <a href="{% url 'account_login' %}" class="btn"><i class="fas fa-sign-in-alt"></i> Kirish</a>
+        <a href="{% url 'account_signup' %}" class="btn"><i class="fas fa-user-plus"></i> Ro‘yxatdan o‘tish</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  {% if messages %}
+    <ul class="messages" role="alert">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <main>
+    {% block content %}
+    <!-- Sahifa kontenti shu yerda ko‘rsatiladi -->
+    {% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Biznes Platforma. Barcha huquqlar himoyalangan.</p>
+  </footer>
+
+  {% block extra_scripts %}
+  <!-- Qo‘shimcha JS scriptlar -->
+  {% endblock %}
+</body>
+</html>

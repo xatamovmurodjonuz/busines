@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{# Agar maxsus filterlar yaratgan bo‘lsangiz, ularni yuklang. Agar yo‘q bo‘lsa, bu qatorni olib tashlang #}
+{% load custom_filters %}
+
+{% block title %}Bizneslar ro'yxati{% endblock %}
+
+{% block content %}
+<div class="search-bar">
+  <form method="GET" action="{% url 'mainapp:home' %}">
+    <input type="search" name="q" value="{{ q|default:'' }}" placeholder="Biznes yoki xizmat qidiring..." />
+    <select name="category">
+      <option value="">Barcha kategoriyalar</option>
+      {% for cat in categories %}
+        <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Qidirish</button>
+  </form>
+  <a href="{% url 'mainapp:home' %}">Barchasini ko‘rsatish</a>
+</div>
+
+<main>
+  <nav class="sidebar">
+    <h3>Kategoriyalar</h3>
+    <ul>
+      <li><a href="{% url 'mainapp:home' %}">Barcha</a></li>
+      {% for cat in categories %}
+      <li><a href="?category={{ cat.id }}">{{ cat.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <section class="business-list">
+    {% if businesses %}
+      {% for business in businesses %}
+        <article class="business-card">
+          {% if business.image %}
+            <img src="{{ business.image.url }}" alt="{{ business.name }}" width="120" height="90" />
+          {% else %}
+            <img src="https://via.placeholder.com/120x90" alt="{{ business.name }}" />
+          {% endif %}
+
+          <div class="business-info">
+            <h4>{{ business.name }}</h4>
+            <p>{{ business.description|truncatechars:80 }}</p>
+
+            <p>Likes: {{ business.likes_count|default:"0" }}</p>
+            <p>Dislikes: {{ business.dislikes_count|default:"0" }}</p>
+
+            {% if user.is_authenticated %}
+              <form action="{% url 'mainapp:react_business' business.pk 'like' %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit"
+                  {% if user_reactions|dict_has_key:business.pk and user_reactions|dict_get:business.pk == 1 %}
+                    style="font-weight:bold; color:green;"
+                  {% endif %}
+                >
+                  👍 Like
+                </button>
+              </form>
+
+              <form action="{% url 'mainapp:react_business' business.pk 'dislike' %}" method="POST" style="display:inline; margin-left:10px;">
+                {% csrf_token %}
+                <button type="submit"
+                  {% if user_reactions|dict_has_key:business.pk and user_reactions|dict_get:business.pk == -1 %}
+                    style="font-weight:bold; color:red;"
+                  {% endif %}
+                >
+                  👎 Dislike
+                </button>
+              </form>
+            {% else %}
+              <p>
+                <a href="{% url 'account_login' %}">Kirish</a> yoki <a href="{% url 'account_signup' %}">Ro'yxatdan o'tish</a> uchun reyting bosing.
+              </p>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <p>Hech qanday biznes topilmadi.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}
