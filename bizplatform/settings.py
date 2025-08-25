@@ -6,13 +6,12 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Maxfiy kalit va debug holati .env dan olinadi
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-secret-key")
+SECRET_KEY = os.environ.get("SECRET_KEY", "changeme")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # HOST lar ro'yxati
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
+ALLOWED_HOSTS = ["*"]
 # Ma'lumotlar bazasi sozlamalari
 DATABASES = {
     "default": dj_database_url.config(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
